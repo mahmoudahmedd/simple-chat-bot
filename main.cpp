@@ -20,16 +20,15 @@ const string delim = "?!.;,*";
 typedef vector<string> vstring;
 
 vstring find_match(string input);
-void copy(char *array[], vstring &v);
 void preprocess_input(string &str);
-void UpperCase(string &str);
+void upperCase(string &str);
 void cleanString(string &str);
 bool isPunc(char c);
 
 typedef struct
 {
-    char* input;
-    char* responses[MAX_RESP];
+    string input;
+    string responses[MAX_RESP];
 } record;
 
 record KnowledgeBase[] =
@@ -663,29 +662,23 @@ vstring find_match(string  input)
     vstring result;
     for(unsigned i = 0; i < nKnowledgeBaseSize;  ++i)
     {
-        if(string(KnowledgeBase[i].input) == input)
+        if(KnowledgeBase[i].input == input)
         {
-            copy(KnowledgeBase[i].responses, result);
+			for(int j = 0; j < MAX_RESP; ++j)
+			{
+				result.push_back(KnowledgeBase[i].responses[j]);
+			}
             return result;
         }
     }
     return result;
 }
-
-void copy(char  *array[], vstring &v)
-{
-    for(int i = 0; i < MAX_RESP; ++i)
-    {
-        v.push_back(array[i]);
-    }
-}
-
 void preprocess_input(string &str)
 {
     cleanString(str);
-    UpperCase(str);
+    upperCase(str);
 }
-void UpperCase(string &str)
+void upperCase(string &str)
 {
     int len = str.length();
     for( int i = 0; i < len; i++ )
@@ -693,25 +686,19 @@ void UpperCase(string &str)
 }
 bool isPunc(char c)
 {
-    return delim.find(c) != std::string::npos;
+    return delim.find(c) != string::npos;
 }
 void cleanString(string &str)
 {
     int len = str.length();
     string temp = "";
-
-    char prevChar = 0;
-
-    for(int i = 0; i < len; ++i)
+	temp += str[0];
+    for(int i = 1; i < len; ++i)
     {
-        if( (str[i] == ' ' && prevChar != ' ') || !isPunc(str[i]) )
+        if(!isPunc(str[i]))
         {
-            temp += str[i];
-            prevChar = str[i];
-        }
-        else if(prevChar != ' ' && isPunc(str[i]))
-        {
-            temp += ' ';
+			if(!(str[i] == ' ' && str[i-1] == ' '))
+				temp += str[i];
         }
     }
     str = temp;
